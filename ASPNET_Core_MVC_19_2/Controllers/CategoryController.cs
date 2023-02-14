@@ -13,9 +13,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public CategoryController(IConfiguration configuration)
+        private readonly mydbContext _context;
+
+        public CategoryController(IConfiguration configuration, mydbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpGet]
@@ -23,9 +26,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var categories = db.Categories.ToList();
+                    var categories = _context.Categories.ToList();
 
                     return new JsonResult(categories);
                 }
@@ -41,15 +44,15 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     var _category = new Category()
                     {
                         Title = category.Title
                     };
-                    db.Categories.Add(_category);
+                    _context.Categories.Add(_category);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Added Successfully");
                 }

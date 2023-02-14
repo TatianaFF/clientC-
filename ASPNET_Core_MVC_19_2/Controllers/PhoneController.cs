@@ -15,9 +15,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
     public class PhoneController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public PhoneController(IConfiguration configuration)
+        private readonly mydbContext _context;
+
+        public PhoneController(IConfiguration configuration, mydbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpGet]
@@ -25,9 +28,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var phones = db.Phones.ToList();
+                    var phones = _context.Phones.ToList();
 
                     return new JsonResult(phones);
                 }
@@ -43,9 +46,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var phone = db.Phones.Where(p => p.Id == idPhone).Single();
+                    var phone = _context.Phones.Where(p => p.Id == idPhone).Single();
 
                     return new JsonResult(phone);
                 }
@@ -61,7 +64,7 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     var _phone = new Phone() {
                         Title = phone.Title,
@@ -75,9 +78,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
                         Brand = phone.Brand,
                         Category = phone.Brand
                     };
-                    db.Phones.Add(_phone);
+                    _context.Phones.Add(_phone);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Added Successfully");
                 }
@@ -94,13 +97,13 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var _phone = db.Phones.Where(p => p.Id == phone.Id).Single();
+                    var _phone = _context.Phones.Where(p => p.Id == phone.Id).Single();
 
-                    db.Entry(_phone).CurrentValues.SetValues(phone);
+                    _context.Entry(_phone).CurrentValues.SetValues(phone);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Updated Successfully");
                 }
@@ -116,12 +119,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var _phone = db.Phones.Where(p => p.Id == id).Single();
-                    db.Phones.Remove(_phone);
+                    var _phone = _context.Phones.Where(p => p.Id == id).Single();
+                    _context.Phones.Remove(_phone);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Deleted Successfully");
                 }

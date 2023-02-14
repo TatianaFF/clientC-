@@ -13,9 +13,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
     public class FavoriteController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public FavoriteController(IConfiguration configuration)
+        private readonly mydbContext _context;
+
+        public FavoriteController(IConfiguration configuration, mydbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         /*[HttpGet]
@@ -41,7 +44,7 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     /*List<Favorite> favoritesByUserId = db.Favorites.Where(f => f.IdUser == userId).ToList();
 
@@ -53,13 +56,13 @@ namespace ASPNET_Core_MVC_19_2.Controllers
 
                     List<FavoritePhoneModel> favoritePhoneList = new List<FavoritePhoneModel>();
 
-                    List<Favorite> favoritesByUserId = db.Favorites.Where(f => f.IdUser == userId).ToList();
+                    List<Favorite> favoritesByUserId = _context.Favorites.Where(f => f.IdUser == userId).ToList();
 
                     List<int> idPhonesFavorite = new List<int>();
 
                     foreach (Favorite favorite in favoritesByUserId) idPhonesFavorite.Add(favorite.IdPhone);
 
-                    List<Phone> phonesById = db.Phones.Where(p => idPhonesFavorite.Contains(p.Id)).ToList();
+                    List<Phone> phonesById = _context.Phones.Where(p => idPhonesFavorite.Contains(p.Id)).ToList();
 
                     foreach (Favorite _favorite in favoritesByUserId)
                     {
@@ -83,16 +86,16 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     var _favorite = new Favorite()
                     {
                         IdUser = favorite.IdUser,
                         IdPhone = favorite.IdPhone
                     };
-                    db.Favorites.Add(_favorite);
+                    _context.Favorites.Add(_favorite);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Added Successfully");
                 }
@@ -109,12 +112,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var _favorite = db.Favorites.Where(f => f.Id == id).Single();
-                    db.Favorites.Remove(_favorite);
+                    var _favorite = _context.Favorites.Where(f => f.Id == id).Single();
+                    _context.Favorites.Remove(_favorite);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Deleted Successfully");
                 }

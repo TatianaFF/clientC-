@@ -13,9 +13,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
     public class BrandController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public BrandController(IConfiguration configuration)
+        private readonly mydbContext _context;
+
+        public BrandController(IConfiguration configuration, mydbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpGet]
@@ -23,9 +26,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var brands = db.Brands.ToList();
+                    var brands = _context.Brands.ToList();
 
                     return new JsonResult(brands);
                 }
@@ -41,16 +44,16 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     var _brand = new Brand()
                     {
                         Title = brand.Title,
                         Logo = brand.Logo
                     };
-                    db.Brands.Add(_brand);
+                    _context.Brands.Add(_brand);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Added Successfully");
                 }

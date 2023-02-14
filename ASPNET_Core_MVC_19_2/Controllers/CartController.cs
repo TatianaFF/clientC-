@@ -13,9 +13,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
     public class CartController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public CartController(IConfiguration configuration)
+        private readonly mydbContext _context;
+
+        public CartController(IConfiguration configuration, mydbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpGet]
@@ -23,17 +26,17 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     List<CartPhoneModel> cartPhoneList = new List<CartPhoneModel>();
 
-                    List<Cart> cartsByUserId = db.Carts.Where(c => c.IdUser == userId).ToList();
+                    List<Cart> cartsByUserId = _context.Carts.Where(c => c.IdUser == userId).ToList();
 
                     List<int> idPhonesCart = new List<int>();
 
                     foreach (Cart cart in cartsByUserId) idPhonesCart.Add(cart.IdPhone);
 
-                    List<Phone> phonesById = db.Phones.Where(p => idPhonesCart.Contains(p.Id)).ToList();
+                    List<Phone> phonesById = _context.Phones.Where(p => idPhonesCart.Contains(p.Id)).ToList();
 
                     foreach (Cart _cart in cartsByUserId)
                     {
@@ -58,9 +61,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    List<Cart> cartsByPhoneId = db.Carts.Where(c => c.IdPhone == phoneId).ToList();
+                    List<Cart> cartsByPhoneId = _context.Carts.Where(c => c.IdPhone == phoneId).ToList();
 
 
                     return new JsonResult(cartsByPhoneId);
@@ -77,13 +80,13 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var _cart = db. Carts.Where(с => с.Id == cart.Id).Single();
+                    var _cart = _context. Carts.Where(с => с.Id == cart.Id).Single();
 
-                    db.Entry(_cart).CurrentValues.SetValues(cart);
+                    _context.Entry(_cart).CurrentValues.SetValues(cart);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Updated Successfully");
                 }
@@ -99,7 +102,7 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     var _cart = new Cart()
                     {
@@ -107,9 +110,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
                         IdPhone = cart.IdPhone,
                         Count = 1
                     };
-                    db.Carts.Add(_cart);
+                    _context.Carts.Add(_cart);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Added Successfully");
                 }
@@ -126,12 +129,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var _cart = db.Carts.Where(c => c.Id == id).Single();
-                    db.Carts.Remove(_cart);
+                    var _cart = _context.Carts.Where(c => c.Id == id).Single();
+                    _context.Carts.Remove(_cart);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Deleted Successfully");
                 }

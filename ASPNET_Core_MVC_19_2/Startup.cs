@@ -32,12 +32,15 @@ namespace ASPNET_Core_MVC_19_2
             });
 
             //JSON Serializer
-            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+            services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver
                 = new DefaultContractResolver());
 
-            services.AddControllersWithViews();
+            //services.AddControllers();
+
+            services.AddDbContext<mydbContext>(
+        options => options.UseSqlServer("name=ConnectionStrings:AppCon"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -13,9 +13,12 @@ namespace ASPNET_Core_MVC_19_2.Controllers
     public class UserController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public UserController(IConfiguration configuration)
+        private readonly mydbContext _context;
+
+        public UserController(IConfiguration configuration, mydbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpGet]
@@ -23,9 +26,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
-                    var users = db.UserMs.ToList();
+                    var users = _context.UserMs.ToList();
 
                     return new JsonResult(users);
                 }
@@ -41,7 +44,7 @@ namespace ASPNET_Core_MVC_19_2.Controllers
         {
             try
             {
-                using (var db = new mydbContext())
+                using (_context)
                 {
                     var _user = new UserM()
                     {
@@ -49,9 +52,9 @@ namespace ASPNET_Core_MVC_19_2.Controllers
                         Login = user.Login,
                         Password = user.Password
                     };
-                    db.UserMs.Add(_user);
+                    _context.UserMs.Add(_user);
 
-                    db.SaveChanges();
+                    _context.SaveChanges();
 
                     return new JsonResult("Added Successfully");
                 }
